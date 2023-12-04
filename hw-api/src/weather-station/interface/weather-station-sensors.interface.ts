@@ -1,7 +1,8 @@
 import { ISensorsData } from '../../abstract-device/interface'
+import { WindDirection } from '../enum';
 
 export interface IWeatherStationSensors extends ISensorsData {
     windSpeed: number;
-    windDirection: string;
+    windDirection: WindDirection;
     temperature: number;
 }
