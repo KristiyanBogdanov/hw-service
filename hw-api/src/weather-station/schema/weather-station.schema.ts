@@ -2,35 +2,27 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsBoolean, IsDateString, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Location } from '../../abstract-device/schema';
-import { ISolarTrackerSensorsStatus, ISolarTracker } from '../interface';
+import { IWeatherStation, IWeatherStationSensorsStatus } from '../interface';
 
 @Schema({ _id: false })
-export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
+export class WeatherStationSensorsStatus implements IWeatherStationSensorsStatus {
     @IsBoolean()
     @Prop({ required: true })
-    irradianceSensor: boolean;
-
+    anemometer: boolean;
+    
     @IsBoolean()
     @Prop({ required: true })
-    accelerometer: boolean;
-
-    @IsBoolean()
-    @Prop({ required: true })
-    azimuthMotor: boolean;
-
-    @IsBoolean()
-    @Prop({ required: true })
-    elevationMotor: boolean;
+    temperatureSensor: boolean;
 }
 
 @Schema({
-    collection: 'solarTrackers',
+    collection: 'weatherStations',
 })
-export class SolarTracker implements ISolarTracker {
+export class WeatherStation implements IWeatherStation {
     @IsString()
     @Prop({
         index: {
-            name: 'stSerialNumberIndex',
+            name: 'wsSerialNumberIndex',
             unique: true
         },
         required: true
@@ -53,16 +45,16 @@ export class SolarTracker implements ISolarTracker {
 
     @IsNotEmpty()
     @ValidateNested()
-    @Type(() => SolarTrackerSensorsStatus)
+    @Type(() => WeatherStationSensorsStatus)
     @Prop({
-        type: SolarTrackerSensorsStatus,
+        type: WeatherStationSensorsStatus,
         required: true
     })
-    sensorsStatus: SolarTrackerSensorsStatus;
+    sensorsStatus: WeatherStationSensorsStatus;
 
     @IsDateString()
     @Prop({ required: true })
     lastUpdate: Date;
-};
+}
 
-export const SolarTrackerSchema = SchemaFactory.createForClass(SolarTracker);
+export const WeatherStationSchema = SchemaFactory.createForClass(WeatherStation);

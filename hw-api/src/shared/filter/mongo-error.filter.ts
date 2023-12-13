@@ -16,6 +16,9 @@ export class MongoErrorFilter implements ExceptionFilter {
         };
 
         switch (error.code) {
+            case 11000:
+                mongoErrorResponse(HttpStatus.CONFLICT);
+                break;
             default:
                 mongoErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
                 break;

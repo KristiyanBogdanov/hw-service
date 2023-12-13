@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsDateString, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ISolarTrackerReport } from '../interface';
 import { SensorReport } from '../../abstract-device/schema';
+import { ISolarTrackerReport } from '../interface';
 
 @Schema({
     collection: 'solarTrackersReports',
