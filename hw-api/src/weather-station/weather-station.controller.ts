@@ -1,4 +1,5 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ValidateSerialNumberRes } from '../abstract-device/dto';
 import { WeatherStationService } from './weather-station.service';
 import {
     InitWSReq, InitWSRes,
@@ -29,5 +30,10 @@ export class WeatherStationController {
         @Body() sensorsReport: ReportWSSensorsStatusReq
     ): Promise<ReportWSSensorsStatusRes> {
         return await this.service.reportSensorsStatus(serialNumber, sensorsReport);
+    }
+
+    @Get('/validate/:serialNumber')
+    async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateSerialNumberRes> {
+        return await this.service.validateSerialNumber(serialNumber);
     }
 }

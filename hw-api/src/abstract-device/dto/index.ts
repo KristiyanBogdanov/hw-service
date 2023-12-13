@@ -1,0 +1,1 @@
+export * from './validate-serial-number.dto'

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Document } from 'mongoose';
 import { EntityRepository } from '../shared/database';
 import { IDevice, ISensorsData, ISensorsReport } from './interface';
+import { ValidateSerialNumberRes } from './dto';
 
 @Injectable()
 export abstract class DeviceService<
@@ -67,5 +68,10 @@ export abstract class DeviceService<
         }
 
         return await this.reportRepository.create(sensorsReport);
+    }
+
+    async validateSerialNumber(serialNumber: string): Promise<ValidateSerialNumberRes> {
+        const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
+        return { isValid: !!device };
     }
 }
