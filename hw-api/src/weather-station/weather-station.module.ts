@@ -5,6 +5,9 @@ import {
     WeatherStationSensors, WeatherStationSensorsSchema,
     WeatherStationReport, WeatherStationReportSchema
 } from './schema';
+import { WeatherStationController } from './weather-station.controller';
+import { WeatherStationScheduleService } from './weather-station-schedule.service';
+import { WeatherStationService } from './weather-station.service';
 import { WeatherStationReportRepository, WeatherStationRepository, WeatherStationSensorsRepository } from './repository';
 
 @Module({
@@ -15,8 +18,10 @@ import { WeatherStationReportRepository, WeatherStationRepository, WeatherStatio
             { name: WeatherStationReport.name, schema: WeatherStationReportSchema }
         ])
     ],
-    controllers: [],
+    controllers: [WeatherStationController],
     providers: [
+        WeatherStationScheduleService,
+        WeatherStationService,
         WeatherStationRepository,
         WeatherStationSensorsRepository,
         WeatherStationReportRepository

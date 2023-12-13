@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SolarTrackerModule } from './solar-tracker/solar-tracker.module';
+import { WeatherStationModule } from './weather-station/weather-station.module';
 
 @Module({
     imports: [
@@ -16,7 +17,8 @@ import { SolarTrackerModule } from './solar-tracker/solar-tracker.module';
             inject: [ConfigService],
         }),
         ScheduleModule.forRoot(),
-        SolarTrackerModule
+        SolarTrackerModule,
+        WeatherStationModule
     ],
 })
 export class AppModule { }
