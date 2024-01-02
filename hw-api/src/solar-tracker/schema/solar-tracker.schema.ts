@@ -28,6 +28,7 @@ export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
 })
 export class SolarTracker implements ISolarTracker {
     @IsString()
+    @IsNotEmpty()
     @Prop({
         index: {
             name: 'stSerialNumberIndex',

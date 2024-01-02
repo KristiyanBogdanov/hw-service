@@ -20,6 +20,7 @@ export class WeatherStationSensorsStatus implements IWeatherStationSensorsStatus
 })
 export class WeatherStation implements IWeatherStation {
     @IsString()
+    @IsNotEmpty()
     @Prop({
         index: {
             name: 'wsSerialNumberIndex',
