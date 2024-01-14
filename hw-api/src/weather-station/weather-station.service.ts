@@ -7,7 +7,7 @@ import { WeatherStation, WeatherStationReport, WeatherStationSensors } from './s
 import { 
     InitWSReq, InitWSRes,
     SaveWSSensorsDataReq, SaveWSSensorsDataRes,
-    ReportWSSensorsStatusReq, ReportWSSensorsStatusRes, 
+    ReportWSStateReq, ReportWSStateRes, 
     GetWSInsightsRes
 } from './dto';
 
@@ -31,7 +31,6 @@ export class WeatherStationService extends DeviceService<
     async init(deviceData: InitWSReq): Promise<InitWSRes> {
         const weatherStation = plainToClass(WeatherStation, deviceData);
         weatherStation.location = CoordinatesDto.toLocation(deviceData.coordinates);
-        weatherStation.location.coordinates.pop();
 
         const createdWeatherStation = await this.createDevice(weatherStation);
 
@@ -47,13 +46,13 @@ export class WeatherStationService extends DeviceService<
         return plainToClass(SaveWSSensorsDataRes, savedSensorsData.toObject());
     }
 
-    async reportSensorsStatus(serialNumber: string, sensorsReport: ReportWSSensorsStatusReq): Promise<ReportWSSensorsStatusRes> {
-        const weatherStationReport = plainToClass(WeatherStationReport, sensorsReport);
+    async reportState(serialNumber: string, report: ReportWSStateReq): Promise<ReportWSStateRes> {
+        const weatherStationReport = plainToClass(WeatherStationReport, report);
         weatherStationReport.serialNumber = serialNumber;
 
-        const savedSensorsReport = await this.saveDeviceSensorsReport(serialNumber, weatherStationReport);
+        const savedReport = await this.saveDeviceReport(serialNumber, weatherStationReport);
 
-        return plainToClass(ReportWSSensorsStatusRes, savedSensorsReport.toObject());
+        return plainToClass(ReportWSStateRes, savedReport.toObject());
     }
 
     async getInsights(serialNumber: string): Promise<GetWSInsightsRes> {

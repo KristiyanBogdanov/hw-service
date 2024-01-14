@@ -1,17 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Document } from 'mongoose';
 import { EntityRepository } from '../shared/database';
-import { IDevice, ISensorsData, ISensorsReport } from './interface';
+import { IDevice, ISensorsData, IDeviceReport } from './interface';
 import { ValidateSerialNumberRes } from './dto';
 
 @Injectable()
 export abstract class DeviceService<
     Device extends IDevice,
     SensorsData extends ISensorsData,
-    SensorsReport extends ISensorsReport,
+    DeviceReport extends IDeviceReport,
     DeviceRepository extends EntityRepository<Device>,
     SensorsRepository extends EntityRepository<SensorsData>,
-    ReportRepository extends EntityRepository<SensorsReport>,
+    ReportRepository extends EntityRepository<DeviceReport>,
 > {
     constructor(
         protected readonly deviceRepository: DeviceRepository,
@@ -47,7 +47,7 @@ export abstract class DeviceService<
         return await this.sensorsRepository.create(sensorsData);
     }
 
-    protected async saveDeviceSensorsReport(serialNumber: string, sensorsReport: SensorsReport): Promise<SensorsReport & Document> {
+    protected async saveDeviceReport(serialNumber: string, deviceReport: DeviceReport): Promise<DeviceReport & Document> {
         const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
 
         if (!device) {
@@ -58,9 +58,9 @@ export abstract class DeviceService<
 
         const updateFields: Record<string, boolean> = {};
 
-        for (const sensorName of Object.keys(sensorsReport)) {
-            if (sensorsReport[sensorName].isActive !== device.sensorsStatus[sensorName]) {
-                updateFields[`sensorsStatus.${sensorName}`] = sensorsReport[sensorName].isActive;
+        for (const sensorName of Object.keys(deviceReport)) {
+            if (deviceReport[sensorName].isActive !== device.sensorsStatus[sensorName]) {
+                updateFields[`sensorsStatus.${sensorName}`] = deviceReport[sensorName].isActive;
             }
         }
 
@@ -70,7 +70,7 @@ export abstract class DeviceService<
             });
         }
 
-        return await this.reportRepository.create(sensorsReport);
+        return await this.reportRepository.create(deviceReport);
     }
 
     async validateSerialNumber(serialNumber: string): Promise<ValidateSerialNumberRes> {

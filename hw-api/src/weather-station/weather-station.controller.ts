@@ -4,7 +4,7 @@ import { WeatherStationService } from './weather-station.service';
 import {
     InitWSReq, InitWSRes,
     SaveWSSensorsDataReq, SaveWSSensorsDataRes,
-    ReportWSSensorsStatusReq, ReportWSSensorsStatusRes, 
+    ReportWSStateReq, ReportWSStateRes, 
     GetWSInsightsRes
 } from './dto';
 
@@ -26,11 +26,11 @@ export class WeatherStationController {
     }
 
     @Post('/:serialNumber/report')
-    async reportSensorsStatus(
+    async reportState(
         @Param('serialNumber') serialNumber: string,
-        @Body() sensorsReport: ReportWSSensorsStatusReq
-    ): Promise<ReportWSSensorsStatusRes> {
-        return await this.service.reportSensorsStatus(serialNumber, sensorsReport);
+        @Body() report: ReportWSStateReq
+    ): Promise<ReportWSStateRes> {
+        return await this.service.reportState(serialNumber, report);
     }
 
     @Get('/validate/:serialNumber')

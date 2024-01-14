@@ -7,7 +7,7 @@ import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from './schema'
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
-    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes, 
+    ReportSTStateReq, ReportSTStateRes, 
     GetSTInsightsReq, GetSTInsightsRes, STInsightsDto
 } from './dto';
 
@@ -46,13 +46,13 @@ export class SolarTrackerService extends DeviceService<
         return plainToClass(SaveSTSensorsDataRes, savedSensorsData.toObject());
     }
 
-    async reportSensorsStatus(serialNumber: string, sensorsReport: ReportSTSensorsStatusReq): Promise<ReportSTSensorsStatusRes> {
-        const solarTrackerReport = plainToClass(SolarTrackerReport, sensorsReport);
+    async reportState(serialNumber: string, report: ReportSTStateReq): Promise<ReportSTStateRes> {
+        const solarTrackerReport = plainToClass(SolarTrackerReport, report);
         solarTrackerReport.serialNumber = serialNumber;
 
-        const savedSensorsReport = await this.saveDeviceSensorsReport(serialNumber, solarTrackerReport);
+        const savedReport = await this.saveDeviceReport(serialNumber, solarTrackerReport);
 
-        return plainToClass(ReportSTSensorsStatusRes, savedSensorsReport.toObject());
+        return plainToClass(ReportSTStateRes, savedReport.toObject());
     }
 
     async getInsights(requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {

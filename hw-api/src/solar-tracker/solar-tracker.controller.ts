@@ -4,7 +4,7 @@ import { SolarTrackerService } from './solar-tracker.service';
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
-    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes, 
+    ReportSTStateReq, ReportSTStateRes, 
     GetSTInsightsReq, GetSTInsightsRes
 } from './dto';
 
@@ -26,11 +26,11 @@ export class SolarTrackerController {
     }
 
     @Post('/:serialNumber/report')
-    async reportSensorsStatus(
+    async reportState(
         @Param('serialNumber') serialNumber: string,
-        @Body() sensorsReport: ReportSTSensorsStatusReq
-    ): Promise<ReportSTSensorsStatusRes> {
-        return await this.service.reportSensorsStatus(serialNumber, sensorsReport);
+        @Body() report: ReportSTStateReq
+    ): Promise<ReportSTStateRes> {
+        return await this.service.reportState(serialNumber, report);
     }
 
     @Get('/validate/:serialNumber')
