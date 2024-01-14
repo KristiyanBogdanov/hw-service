@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/mapped-types';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { Coordinates } from '../../shared/dto';
+import { CoordinatesDto } from '../../shared/dto';
 import { WeatherStation } from '../schema';
 
 export class InitWSReq extends PickType(WeatherStation, [
@@ -11,8 +11,8 @@ export class InitWSReq extends PickType(WeatherStation, [
 ]) {
     @IsNotEmpty()
     @ValidateNested()
-    @Type(() => Coordinates)
-    readonly coordinates: Coordinates;
+    @Type(() => CoordinatesDto)
+    readonly coordinates: CoordinatesDto;
 }
 
 @Exclude()

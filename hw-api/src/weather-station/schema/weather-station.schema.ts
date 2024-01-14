@@ -1,15 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsBoolean, IsDateString, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { Location } from '../../abstract-device/schema';
 import { IWeatherStation, IWeatherStationSensorsStatus } from '../interface';
 
 @Schema({ _id: false })
 export class WeatherStationSensorsStatus implements IWeatherStationSensorsStatus {
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     anemometer: boolean;
     
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     temperatureSensor: boolean;
@@ -19,6 +21,7 @@ export class WeatherStationSensorsStatus implements IWeatherStationSensorsStatus
     collection: 'weatherStations',
 })
 export class WeatherStation implements IWeatherStation {
+    @Expose()
     @IsString()
     @IsNotEmpty()
     @Prop({
@@ -36,14 +39,17 @@ export class WeatherStation implements IWeatherStation {
     })
     location: Location;
 
+    @Expose()
     @IsDateString()
     @Prop({ required: true })
     installationDate: Date;
 
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     isActive: boolean;
 
+    @Expose()
     @IsNotEmpty()
     @ValidateNested()
     @Type(() => WeatherStationSensorsStatus)
@@ -53,6 +59,7 @@ export class WeatherStation implements IWeatherStation {
     })
     sensorsStatus: WeatherStationSensorsStatus;
 
+    @Expose()
     @IsDateString()
     @Prop({ required: true })
     lastUpdate: Date;

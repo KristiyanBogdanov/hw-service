@@ -1,23 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsBoolean, IsDateString, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { Location } from '../../abstract-device/schema';
 import { ISolarTrackerSensorsStatus, ISolarTracker } from '../interface';
 
 @Schema({ _id: false })
 export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     irradianceSensor: boolean;
 
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     accelerometer: boolean;
 
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     azimuthMotor: boolean;
 
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     elevationMotor: boolean;
@@ -27,6 +31,7 @@ export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
     collection: 'solarTrackers',
 })
 export class SolarTracker implements ISolarTracker {
+    @Expose()
     @IsString()
     @IsNotEmpty()
     @Prop({
@@ -44,14 +49,17 @@ export class SolarTracker implements ISolarTracker {
     })
     location: Location;
 
+    @Expose()
     @IsDateString()
     @Prop({ required: true })
     installationDate: Date;
 
+    @Expose()
     @IsBoolean()
     @Prop({ required: true })
     isActive: boolean;
 
+    @Expose()
     @IsNotEmpty()
     @ValidateNested()
     @Type(() => SolarTrackerSensorsStatus)
@@ -61,6 +69,7 @@ export class SolarTracker implements ISolarTracker {
     })
     sensorsStatus: SolarTrackerSensorsStatus;
 
+    @Expose()
     @IsDateString()
     @Prop({ required: true })
     lastUpdate: Date;

@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { ValidateSerialNumberRes } from '../abstract-device/dto';
 import { SolarTrackerService } from './solar-tracker.service';
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
-    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes
+    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes, 
+    GetSTInsightsReq, GetSTInsightsRes
 } from './dto';
 
 @Controller('solar-tracker')
@@ -35,5 +36,11 @@ export class SolarTrackerController {
     @Get('/validate/:serialNumber')
     async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateSerialNumberRes> {
         return await this.service.validateSerialNumber(serialNumber);
+    }
+
+    @Post('/insights')
+    @HttpCode(HttpStatus.OK)
+    async getInsights(@Body() requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {
+        return await this.service.getInsights(requestData);
     }
 }

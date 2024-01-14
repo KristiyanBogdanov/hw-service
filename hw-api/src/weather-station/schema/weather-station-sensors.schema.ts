@@ -9,7 +9,7 @@ import { WindDirection } from '../enum';
         timeField: 'timestamp',
         metaField: 'serialNumber',
         granularity: 'minutes'
-    },
+    }
 })
 export class WeatherStationSensors implements IWeatherStationSensors {
     @Prop({
