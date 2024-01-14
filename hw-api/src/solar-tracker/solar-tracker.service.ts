@@ -1,20 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { Coordinates } from '../shared/dto';
+import { CoordinatesDto } from '../shared/dto';
 import { DeviceService } from '../abstract-device/device.service';
 import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from './repository';
 import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from './schema';
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
-    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes
+    ReportSTSensorsStatusReq, ReportSTSensorsStatusRes, 
+    GetSTInsightsReq, GetSTInsightsRes, STInsightsDto
 } from './dto';
 
 @Injectable()
 export class SolarTrackerService extends DeviceService<
     SolarTracker,
     SolarTrackerSensors,
-    SolarTrackerReport
+    SolarTrackerReport,
+    SolarTrackerRepository,
+    SolarTrackerSensorsRepository,
+    SolarTrackerReportRepository
 > {
     constructor(
         solarTrackerRepository: SolarTrackerRepository,
@@ -26,7 +30,7 @@ export class SolarTrackerService extends DeviceService<
 
     async init(deviceData: InitSTReq): Promise<InitSTRes> {
         const solarTracker = plainToClass(SolarTracker, deviceData);
-        solarTracker.location = Coordinates.toLocation(deviceData.coordinates);
+        solarTracker.location = CoordinatesDto.toLocation(deviceData.coordinates);
 
         const createdSolarTracker = await this.createDevice(solarTracker);
 
@@ -49,5 +53,40 @@ export class SolarTrackerService extends DeviceService<
         const savedSensorsReport = await this.saveDeviceSensorsReport(serialNumber, solarTrackerReport);
 
         return plainToClass(ReportSTSensorsStatusRes, savedSensorsReport.toObject());
+    }
+
+    async getInsights(requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {
+        const insights: Record<string, STInsightsDto> = {};
+
+        await Promise.all(
+            requestData.serialNumbers.map(async (serialNumber) => {
+                const solarTracker = await this.deviceRepository.findOne({ serialNumber: serialNumber });
+
+                if (!solarTracker) {
+                    throw new NotFoundException(`Device with serial number ${serialNumber} not found`);
+                }
+
+                const stData = plainToClass(STInsightsDto, solarTracker.toObject());
+                stData.coordinates = CoordinatesDto.fromLocation(solarTracker.location);
+
+                const [latestSensorsData, last24hAvgIrradiance] = await Promise.all([
+                    this.sensorsRepository.getLatestSensorsData(serialNumber),
+                    this.sensorsRepository.getHourlyAvgIrradiance24h(serialNumber),
+                ]);
+
+                if (latestSensorsData) {
+                    stData.currentAzimuth = latestSensorsData.azimuth;
+                    stData.currentElevation = latestSensorsData.elevation;
+                    stData.azimuthDeviation = latestSensorsData.azimuthDeviation;
+                    stData.elevationDeviation = latestSensorsData.elevationDeviation;
+                }
+
+                stData.last24hAvgIrradiance = last24hAvgIrradiance;
+
+                insights[serialNumber] = stData;
+            })
+        );
+
+        return { data: insights };
     }
 }

@@ -8,7 +8,7 @@ import { ISolarTrackerSensors } from '../interface';
         timeField: 'timestamp',
         metaField: 'serialNumber',
         granularity: 'minutes'
-    },
+    }
 })
 export class SolarTrackerSensors implements ISolarTrackerSensors {
     @Prop({

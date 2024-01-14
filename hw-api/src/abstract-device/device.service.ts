@@ -9,11 +9,14 @@ export abstract class DeviceService<
     Device extends IDevice,
     SensorsData extends ISensorsData,
     SensorsReport extends ISensorsReport,
+    DeviceRepository extends EntityRepository<Device>,
+    SensorsRepository extends EntityRepository<SensorsData>,
+    ReportRepository extends EntityRepository<SensorsReport>,
 > {
     constructor(
-        protected readonly deviceRepository: EntityRepository<Device>,
-        protected readonly sensorsRepository: EntityRepository<SensorsData>,
-        protected readonly reportRepository: EntityRepository<SensorsReport>
+        protected readonly deviceRepository: DeviceRepository,
+        protected readonly sensorsRepository: SensorsRepository,
+        protected readonly reportRepository: ReportRepository,
     ) { }
 
     protected async createDevice(device: Device): Promise<Device & Document> {
