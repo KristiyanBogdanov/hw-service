@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseFilters } from '@nestjs/common';
+import { AxiosErrorFilter } from '../shared/filter';
 import { ValidateSerialNumberRes } from '../abstract-device/dto';
 import { SolarTrackerService } from './solar-tracker.service';
 import {
@@ -26,6 +27,7 @@ export class SolarTrackerController {
     }
 
     @Post('/:serialNumber/report')
+    @UseFilters(new AxiosErrorFilter())
     async reportState(
         @Param('serialNumber') serialNumber: string,
         @Body() report: ReportSTStateReq

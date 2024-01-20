@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { plainToClass } from 'class-transformer';
+import { MobileAppApi } from '../shared/api';
 import { CoordinatesDto } from '../shared/dto';
 import { DeviceService } from '../abstract-device/device.service';
 import { WeatherStationReportRepository, WeatherStationRepository, WeatherStationSensorsRepository } from './repository';
@@ -24,8 +26,10 @@ export class WeatherStationService extends DeviceService<
         weatherStationRepository: WeatherStationRepository,
         weatherStationSensorsRepository: WeatherStationSensorsRepository,
         weatherStationReportRepository: WeatherStationReportRepository,
+        httpService: HttpService,
+        mobileAppApi: MobileAppApi,
     ) {
-        super(weatherStationRepository, weatherStationSensorsRepository, weatherStationReportRepository);
+        super(weatherStationRepository, weatherStationSensorsRepository, weatherStationReportRepository, httpService, mobileAppApi);
     }
 
     async init(deviceData: InitWSReq): Promise<InitWSRes> {

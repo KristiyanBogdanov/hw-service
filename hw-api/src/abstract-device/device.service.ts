@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 import { Document } from 'mongoose';
+import { plainToClass } from 'class-transformer';
 import { EntityRepository } from '../shared/database';
+import { MobileAppApi } from '../shared/api';
 import { IDevice, ISensorsData, IDeviceReport } from './interface';
-import { ValidateSerialNumberRes } from './dto';
+import { MobileAppNotificationDto, ValidateSerialNumberRes } from './dto';
+import { DeviceType, NotificationType } from './enum';
 
 @Injectable()
 export abstract class DeviceService<
@@ -17,6 +22,8 @@ export abstract class DeviceService<
         protected readonly deviceRepository: DeviceRepository,
         protected readonly sensorsRepository: SensorsRepository,
         protected readonly reportRepository: ReportRepository,
+        private readonly httpService: HttpService,
+        private readonly mobileAppApi: MobileAppApi,
     ) { }
 
     protected async createDevice(device: Device): Promise<Device & Document> {
@@ -73,8 +80,25 @@ export abstract class DeviceService<
         return await this.reportRepository.create(deviceReport);
     }
 
+    async sendNotificationToMobileApp(report: IDeviceReport, deviceType: DeviceType, notificationType: NotificationType) {
+        const mobileAppNotificationDto = plainToClass(MobileAppNotificationDto, report);
+        mobileAppNotificationDto.message = report.generalMessage;
+        mobileAppNotificationDto.notificationType = notificationType;
+        mobileAppNotificationDto.deviceType = deviceType;
+
+        const result = await lastValueFrom(
+            this.httpService.post<void>(this.mobileAppApi.sendHwNotification(), mobileAppNotificationDto)
+        );
+
+        if (result.status !== HttpStatus.CREATED) {
+            throw new InternalServerErrorException('Failed to send notification to mobile app');
+        }
+    }
+
     async validateSerialNumber(serialNumber: string): Promise<ValidateSerialNumberRes> {
         const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
         return { isValid: !!device };
     }
 }
+
+// TODO: try to remove toObject() calls and excludeExtraneousValues: true
