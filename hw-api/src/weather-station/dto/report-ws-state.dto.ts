@@ -5,7 +5,7 @@ import { WeatherStationReport } from '../schema';
 export class ReportWSStateReq extends PickType(WeatherStationReport, [
     'anemometer',
     'temperatureSensor',
-    'reportType',
+    'importance',
     'generalMessage',
     'timestamp'
 ]) { }

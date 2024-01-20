@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { plainToClass } from 'class-transformer';
 import { CoordinatesDto } from '../shared/dto';
+import { MobileAppApi } from '../shared/api';
 import { DeviceService } from '../abstract-device/device.service';
+import { DeviceType, NotificationType } from '../abstract-device/enum';
 import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from './repository';
 import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from './schema';
 import {
@@ -24,8 +27,10 @@ export class SolarTrackerService extends DeviceService<
         solarTrackerRepository: SolarTrackerRepository,
         solarTrackerSensorsRepository: SolarTrackerSensorsRepository,
         solarTrackerReportRepository: SolarTrackerReportRepository,
+        httpService: HttpService,
+        mobileAppApi: MobileAppApi,
     ) {
-        super(solarTrackerRepository, solarTrackerSensorsRepository, solarTrackerReportRepository);
+        super(solarTrackerRepository, solarTrackerSensorsRepository, solarTrackerReportRepository, httpService, mobileAppApi);
     }
 
     async init(deviceData: InitSTReq): Promise<InitSTRes> {
@@ -51,6 +56,7 @@ export class SolarTrackerService extends DeviceService<
         solarTrackerReport.serialNumber = serialNumber;
 
         const savedReport = await this.saveDeviceReport(serialNumber, solarTrackerReport);
+        await this.sendNotificationToMobileApp(savedReport, DeviceType.SolarTracker, NotificationType.DeviceState);
 
         return plainToClass(ReportSTStateRes, savedReport.toObject());
     }

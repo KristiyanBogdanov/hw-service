@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ReportType } from '../../abstract-device/enum';
+import { Importance } from '../../abstract-device/enum';
 import { SensorReport } from '../../abstract-device/schema';
 import { IWeatherStationReport } from '../interface';
 
@@ -27,13 +27,13 @@ export class WeatherStationReport implements IWeatherStationReport {
     @Prop({ type: SensorReport })
     temperatureSensor?: SensorReport;
 
-    @IsEnum(ReportType)
+    @IsEnum(Importance)
     @Prop({
         type: String,
-        enum: ReportType,
+        enum: Importance,
         required: true,
     })
-    reportType: ReportType;
+    importance: Importance;
 
     @IsString()
     @IsNotEmpty()

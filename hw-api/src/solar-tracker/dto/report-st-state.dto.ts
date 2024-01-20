@@ -7,7 +7,7 @@ export class ReportSTStateReq extends PickType(SolarTrackerReport, [
     'accelerometer',
     'azimuthMotor',
     'elevationMotor',
-    'reportType',
+    'importance',
     'generalMessage',
     'timestamp'
 ]) { }

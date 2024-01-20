@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
+import { MobileAppApi } from '../shared/api';
 import {
     SolarTracker, SolarTrackerSchema,
     SolarTrackerSensors, SolarTrackerSensorsSchema,
@@ -16,7 +18,8 @@ import { SolarTrackerRepository, SolarTrackerSensorsRepository, SolarTrackerRepo
             { name: SolarTracker.name, schema: SolarTrackerSchema },
             { name: SolarTrackerSensors.name, schema: SolarTrackerSensorsSchema },
             { name: SolarTrackerReport.name, schema: SolarTrackerReportSchema }
-        ])
+        ]),
+        HttpModule
     ],
     controllers: [SolarTrackerController],
     providers: [
@@ -24,7 +27,8 @@ import { SolarTrackerRepository, SolarTrackerSensorsRepository, SolarTrackerRepo
         SolarTrackerService,
         SolarTrackerRepository,
         SolarTrackerSensorsRepository,
-        SolarTrackerReportRepository
+        SolarTrackerReportRepository,
+        MobileAppApi
     ],
 })
 export class SolarTrackerModule { }
