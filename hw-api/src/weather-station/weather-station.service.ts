@@ -4,6 +4,7 @@ import { plainToClass } from 'class-transformer';
 import { MobileAppApi } from '../shared/api';
 import { CoordinatesDto } from '../shared/dto';
 import { DeviceService } from '../abstract-device/device.service';
+import { DeviceType, NotificationType } from '../abstract-device/enum';
 import { WeatherStationReportRepository, WeatherStationRepository, WeatherStationSensorsRepository } from './repository';
 import { WeatherStation, WeatherStationReport, WeatherStationSensors } from './schema';
 import { 
@@ -55,7 +56,8 @@ export class WeatherStationService extends DeviceService<
         weatherStationReport.serialNumber = serialNumber;
 
         const savedReport = await this.saveDeviceReport(serialNumber, weatherStationReport);
-
+        await this.sendNotificationToMobileApp(savedReport, DeviceType.WeatherStation, NotificationType.DeviceState);
+        
         return plainToClass(ReportWSStateRes, savedReport.toObject());
     }
 
@@ -78,10 +80,10 @@ export class WeatherStationService extends DeviceService<
             insights.currentTemperature = latestSensorsData.temperature;
             insights.currentWindSpeed = latestSensorsData.windSpeed;
             insights.currentWindDirection = latestSensorsData.windDirection;
-        }
 
-        insights.last24hAvgTemperature = averageValues.temperature;
-        insights.last24hAvgWindSpeed = averageValues.windSpeed;
+            insights.last24hAvgTemperature = averageValues.temperature;
+            insights.last24hAvgWindSpeed = averageValues.windSpeed;
+        }
 
         return insights;
     }

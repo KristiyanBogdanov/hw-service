@@ -85,9 +85,9 @@ export class SolarTrackerService extends DeviceService<
                     stData.currentElevation = latestSensorsData.elevation;
                     stData.azimuthDeviation = latestSensorsData.azimuthDeviation;
                     stData.elevationDeviation = latestSensorsData.elevationDeviation;
-                }
 
-                stData.last24hAvgIrradiance = last24hAvgIrradiance;
+                    stData.last24hAvgIrradiance = last24hAvgIrradiance;
+                }
 
                 insights[serialNumber] = stData;
             })
