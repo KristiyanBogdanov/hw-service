@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { EntityRepository } from '../../shared/database';
+import { EntityRepository } from '../../database';
 import { AverageSensorValueDto } from '../../shared/dto';
+import { ISensorsData } from '../interface';
 
 @Injectable()
-export abstract class SensorsRepository<T> extends EntityRepository<T> {
+export abstract class SensorsRepository<T extends ISensorsData> extends EntityRepository<T> {
     constructor(protected readonly model: Model<T>) {
         super(model);
     }
 
-    async getLatestSensorsData(serialNumber: string): Promise<T> {
+    async getLatestSensorsData(deviceId: string): Promise<T> {
         return await this.findOne(
-            { serialNumber: serialNumber },
+            { deviceId: deviceId },
             {},
             { sort: { timestamp: -1 } }
         );
@@ -29,11 +30,15 @@ export abstract class SensorsRepository<T> extends EntityRepository<T> {
         });
     }
 
-    protected getAvgValue(serialNumber: string, groupingOperator: string, fieldName: string): Promise<Record<string, number>[]> {
+    protected getAvgValue(interval:number, deviceId: string, groupingOperator: string, fieldName: string): Promise<Record<string, number>[]> {
         return this.aggregate([
             {
                 $match: {
-                    serialNumber: serialNumber
+                    deviceId: deviceId,
+                    timestamp: {
+                        $gte: new Date(new Date().getTime() - interval),
+                        $lt: new Date(),
+                    }
                 }
             },
             {

@@ -1,11 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
-import { DeviceType, Importance, NotificationType,  } from '../enum';
+import { DeviceType, Importance } from '../enum';
 
 @Exclude()
 export class MobileAppNotificationDto {
-    @Expose()
-    notificationType: NotificationType;
-
     @Expose()
     serialNumber: string;
     
@@ -17,6 +14,9 @@ export class MobileAppNotificationDto {
     
     @Expose()
     message: string;
+
+    @Expose()
+    advice: string;
     
     @Expose()
     timestamp: Date;

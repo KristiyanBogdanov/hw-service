@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/mapped-types';
+import { PickType } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { AverageSensorValueDto, CoordinatesDto } from '../../shared/dto';
@@ -9,13 +9,14 @@ export class GetSTInsightsReq {
     @ArrayMinSize(1)
     @IsString({ each: true })
     @IsNotEmpty({ each: true })
-    serialNumbers: string[];
+    serialNumbers: ReadonlyArray<string>;
 }
 
 @Exclude()
 export class STInsightsDto extends PickType(SolarTracker, [
     'installationDate',
     'sensorsStatus',
+    'capacity',
     'isActive',
     'lastUpdate'
 ]) {

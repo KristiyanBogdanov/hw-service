@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SensorsRepository } from '../../abstract-device/repository';
 import { AverageSensorValueDto } from '../../shared/dto';
+import { SEVEN_DAYS_IN_MILLISECONDS, TWELVE_MONTHS_IN_MILLISECONDS, TWENTY_FOUR_HOURS_IN_MILLISECONDS } from '../../shared/constants';
 import { SolarTrackerSensors } from '../schema';
 
 @Injectable()
@@ -11,22 +12,22 @@ export class SolarTrackerSensorsRepository extends SensorsRepository<SolarTracke
         super(model);
     }
 
-    async getHourlyAvgIrradiance24h(serialNumber: string): Promise<AverageSensorValueDto[]> {
-        const result = await this.getAvgValue(serialNumber, '$hour', 'irradiance');
+    async getHourlyAvgIrradiance24h(solarTrackerId: string): Promise<AverageSensorValueDto[]> {
+        const result = await this.getAvgValue(TWENTY_FOUR_HOURS_IN_MILLISECONDS, solarTrackerId, '$hour', 'irradiance');
         if (result.length > 0) {
             return this.mapAvgValueToDto(result, 24);
         }
     }
 
-    async getDailyAvgIrradiance7d(serialNumber: string): Promise<AverageSensorValueDto[]> {
-        const result = await this.getAvgValue(serialNumber, '$dayOfWeek', 'irradiance'); // 1 - Sunday, 7 - Saturday
+    async getDailyAvgIrradiance7d(solarTrackerId: string): Promise<AverageSensorValueDto[]> {
+        const result = await this.getAvgValue(SEVEN_DAYS_IN_MILLISECONDS, solarTrackerId, '$dayOfWeek', 'irradiance'); // 1 - Sunday, 7 - Saturday
         if (result.length > 0) {
             return this.mapAvgValueToDto(result, 7);
         }
     }
 
-    async getMonthlyAvgIrradiance12m(serialNumber: string): Promise<AverageSensorValueDto[]> {
-        const result = await this.getAvgValue(serialNumber, '$month', 'irradiance');
+    async getMonthlyAvgIrradiance12m(solarTrackerId: string): Promise<AverageSensorValueDto[]> {
+        const result = await this.getAvgValue(TWELVE_MONTHS_IN_MILLISECONDS, solarTrackerId, '$month', 'irradiance');
         if (result.length > 0) {
             return this.mapAvgValueToDto(result, 12);
         }

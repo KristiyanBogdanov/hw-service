@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SensorsRepository } from '../../abstract-device/repository';
 import { AverageSensorValueDto } from '../../shared/dto';
+import { TWENTY_FOUR_HOURS_IN_MILLISECONDS } from '../../shared/constants';
 import { WeatherStationSensors } from '../schema';
 
 @Injectable()
@@ -11,13 +12,16 @@ export class WeatherStationSensorsRepository extends SensorsRepository<WeatherSt
         super(model);
     }
 
-    async getHourlyAvgTempAndWindSpeed24h(serialNumber: string): Promise<
-    { temperature: AverageSensorValueDto[], windSpeed: AverageSensorValueDto[] }
-    > {
+    async getHourlyAvgTempAndWindSpeed24h(weatherStationId: string): Promise<
+    { temperature: AverageSensorValueDto[], windSpeed: AverageSensorValueDto[] }> {
         const result = await this.aggregate([
             {
                 $match: {
-                    serialNumber: serialNumber
+                    deviceId: weatherStationId,
+                    timestamp: {
+                        $gte: new Date(new Date().getTime() - TWENTY_FOUR_HOURS_IN_MILLISECONDS),
+                        $lt: new Date(),
+                    }
                 }
             },
             {

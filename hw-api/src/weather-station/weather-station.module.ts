@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { MobileAppApi } from '../shared/api';
@@ -23,6 +23,7 @@ import { WeatherStationReportRepository, WeatherStationRepository, WeatherStatio
     ],
     controllers: [WeatherStationController],
     providers: [
+        Logger,
         WeatherStationScheduleService,
         WeatherStationService,
         WeatherStationRepository,

@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsBoolean, IsDateString, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Expose, Type } from 'class-transformer';
+import { IsBoolean, IsDateString, IsNotEmpty, IsPositive, IsString, ValidateNested } from 'class-validator';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { Location } from '../../abstract-device/schema';
 import { ISolarTrackerSensorsStatus, ISolarTracker } from '../interface';
 
+@Exclude()
 @Schema({ _id: false })
 export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
     @Expose()
@@ -29,8 +30,12 @@ export class SolarTrackerSensorsStatus implements ISolarTrackerSensorsStatus {
 
 @Schema({
     collection: 'solarTrackers',
+    versionKey: false,
 })
 export class SolarTracker implements ISolarTracker {
+    @Expose()
+    id: string;
+
     @Expose()
     @IsString()
     @IsNotEmpty()
@@ -60,6 +65,11 @@ export class SolarTracker implements ISolarTracker {
     isActive: boolean;
 
     @Expose()
+    @IsPositive()
+    @Prop({ required: true })
+    capacity: number;
+
+    @Expose()
     @IsNotEmpty()
     @ValidateNested()
     @Type(() => SolarTrackerSensorsStatus)
@@ -73,6 +83,10 @@ export class SolarTracker implements ISolarTracker {
     @IsDateString()
     @Prop({ required: true })
     lastUpdate: Date;
+
+    constructor(partial: Partial<SolarTracker>) {
+        Object.assign(this, partial);
+    }
 };
 
 export const SolarTrackerSchema = SchemaFactory.createForClass(SolarTracker);

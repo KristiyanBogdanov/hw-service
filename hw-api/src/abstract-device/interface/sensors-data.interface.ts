@@ -1,4 +1,4 @@
 export interface ISensorsData {
-    serialNumber: string;
+    deviceId: string;
     timestamp: Date;
 }

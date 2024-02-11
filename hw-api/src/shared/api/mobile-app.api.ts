@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class MobileAppApi {
     private readonly baseUrl: string;
-    private readonly user = 'user';
+    private readonly user = 'users';
 
     constructor(private readonly configService: ConfigService) {
         this.baseUrl = this.configService.get<string>('MOBILE_APP_API_URL');
@@ -14,7 +14,11 @@ export class MobileAppApi {
         return `${this.baseUrl}/${apiPath}`;
     }
 
-    sendHwNotification() {
-        return this.createApiEndpoint(`${this.user}/send-hw-notification`);
+    sendInactiveDeviceNotification() {
+        return this.createApiEndpoint(`${this.user}/hw-notifications/inactive-devices`);
+    }
+
+    sendDeviceStateReportNotification() {
+        return this.createApiEndpoint(`${this.user}/hw-notifications/device-state-reports`);
     }
 }

@@ -1,17 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { plainToClass } from 'class-transformer';
 import { CoordinatesDto } from '../shared/dto';
 import { MobileAppApi } from '../shared/api';
 import { DeviceService } from '../abstract-device/device.service';
-import { DeviceType, NotificationType } from '../abstract-device/enum';
+import { DeviceType } from '../abstract-device/enum';
 import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from './repository';
 import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from './schema';
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
     ReportSTStateReq, ReportSTStateRes, 
-    GetSTInsightsReq, GetSTInsightsRes, STInsightsDto
+    GetSTInsightsReq, GetSTInsightsRes, STInsightsDto,
+    ValidateSTSerialNumberRes
 } from './dto';
 
 @Injectable()
@@ -28,37 +29,54 @@ export class SolarTrackerService extends DeviceService<
         solarTrackerSensorsRepository: SolarTrackerSensorsRepository,
         solarTrackerReportRepository: SolarTrackerReportRepository,
         httpService: HttpService,
-        mobileAppApi: MobileAppApi,
+        private readonly mobileAppApi: MobileAppApi,
+        private readonly logger: Logger
     ) {
-        super(solarTrackerRepository, solarTrackerSensorsRepository, solarTrackerReportRepository, httpService, mobileAppApi);
+        super(solarTrackerRepository, solarTrackerSensorsRepository, solarTrackerReportRepository, httpService);
     }
 
     async init(deviceData: InitSTReq): Promise<InitSTRes> {
-        const solarTracker = plainToClass(SolarTracker, deviceData);
+        const solarTracker = new SolarTracker(deviceData);
         solarTracker.location = CoordinatesDto.toLocation(deviceData.coordinates);
 
         const createdSolarTracker = await this.createDevice(solarTracker);
 
-        return plainToClass(InitSTRes, createdSolarTracker.toObject());
+        return plainToClass(InitSTRes, createdSolarTracker);
     }
 
-    async saveSensorsData(serialNumber: string, sensorsData: SaveSTSensorsDataReq): Promise<SaveSTSensorsDataRes> {
-        const solarTrackerSensors = plainToClass(SolarTrackerSensors, sensorsData);
-        solarTrackerSensors.serialNumber = serialNumber ;
+    async saveSensorsData(solarTrackerId: string, sensorsData: SaveSTSensorsDataReq): Promise<SaveSTSensorsDataRes> {
+        const solarTrackerSensors = new SolarTrackerSensors(sensorsData);
+        solarTrackerSensors.deviceId = solarTrackerId;
 
-        const savedSensorsData = await this.saveDeviceSensorsData(serialNumber, solarTrackerSensors);
+        const savedSensorsData = await this.saveDeviceSensorsData(solarTrackerId, solarTrackerSensors);
 
-        return plainToClass(SaveSTSensorsDataRes, savedSensorsData.toObject());
+        return plainToClass(SaveSTSensorsDataRes, savedSensorsData);
     }
 
-    async reportState(serialNumber: string, report: ReportSTStateReq): Promise<ReportSTStateRes> {
-        const solarTrackerReport = plainToClass(SolarTrackerReport, report);
-        solarTrackerReport.serialNumber = serialNumber;
+    async reportState(solarTrackerId: string, report: ReportSTStateReq): Promise<ReportSTStateRes> {
+        const solarTrackerReport = new SolarTrackerReport(report);
+        solarTrackerReport.deviceId = solarTrackerId;
 
-        const savedReport = await this.saveDeviceReport(serialNumber, solarTrackerReport);
-        await this.sendNotificationToMobileApp(savedReport, DeviceType.SolarTracker, NotificationType.DeviceState);
+        const result = await this.saveDeviceReport(solarTrackerId, solarTrackerReport);
+        
+        try {
+            await this.sendHwNotificationToMobileApp(
+                result.savedReport, result.serialNumber, DeviceType.SolarTracker, this.mobileAppApi.sendDeviceStateReportNotification()
+            );
+        } catch (error) {
+            this.logger.error(error);
+        }
 
-        return plainToClass(ReportSTStateRes, savedReport.toObject());
+        return plainToClass(ReportSTStateRes, result.savedReport);
+    }
+
+    async validateSerialNumber(serialNumber: string): Promise<ValidateSTSerialNumberRes> {
+        const solarTracker = await this.deviceRepository.findOne({ serialNumber });
+
+        return plainToClass(ValidateSTSerialNumberRes, {
+            isValid: !!solarTracker,
+            capacity: solarTracker?.capacity
+        });
     }
 
     async getInsights(requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {
@@ -66,18 +84,18 @@ export class SolarTrackerService extends DeviceService<
 
         await Promise.all(
             requestData.serialNumbers.map(async (serialNumber) => {
-                const solarTracker = await this.deviceRepository.findOne({ serialNumber: serialNumber });
+                const solarTracker = await this.deviceRepository.findOne({ serialNumber });
 
                 if (!solarTracker) {
-                    throw new NotFoundException(`Device with serial number ${serialNumber} not found`);
+                    throw new NotFoundException();
                 }
 
-                const stData = plainToClass(STInsightsDto, solarTracker.toObject());
+                const stData = plainToClass(STInsightsDto, solarTracker);
                 stData.coordinates = CoordinatesDto.fromLocation(solarTracker.location);
 
                 const [latestSensorsData, last24hAvgIrradiance] = await Promise.all([
-                    this.sensorsRepository.getLatestSensorsData(serialNumber),
-                    this.sensorsRepository.getHourlyAvgIrradiance24h(serialNumber),
+                    this.sensorsRepository.getLatestSensorsData(solarTracker.id),
+                    this.sensorsRepository.getHourlyAvgIrradiance24h(solarTracker.id),
                 ]);
 
                 if (latestSensorsData) {

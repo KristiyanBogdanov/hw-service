@@ -1,39 +1,45 @@
-import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { Document } from 'mongoose';
 import { plainToClass } from 'class-transformer';
-import { EntityRepository } from '../shared/database';
-import { MobileAppApi } from '../shared/api';
+import { EntityRepository } from '../database';
 import { IDevice, ISensorsData, IDeviceReport } from './interface';
-import { MobileAppNotificationDto, ValidateSerialNumberRes } from './dto';
-import { DeviceType, NotificationType } from './enum';
+import { MobileAppNotificationDto } from './dto';
+import { DeviceType } from './enum';
+import { DeviceRepository, SensorsRepository } from './repository';
+import { MobileNotificationReqFailedException } from './exception';
 
 @Injectable()
 export abstract class DeviceService<
-    Device extends IDevice,
-    SensorsData extends ISensorsData,
-    DeviceReport extends IDeviceReport,
-    DeviceRepository extends EntityRepository<Device>,
-    SensorsRepository extends EntityRepository<SensorsData>,
-    ReportRepository extends EntityRepository<DeviceReport>,
+    TDevice extends IDevice,
+    TSensorsData extends ISensorsData,
+    TDeviceReport extends IDeviceReport,
+    TDeviceRepository extends DeviceRepository<TDevice>,
+    TSensorsRepository extends SensorsRepository<TSensorsData>,
+    TReportRepository extends EntityRepository<TDeviceReport>,
 > {
     constructor(
-        protected readonly deviceRepository: DeviceRepository,
-        protected readonly sensorsRepository: SensorsRepository,
-        protected readonly reportRepository: ReportRepository,
+        protected readonly deviceRepository: TDeviceRepository,
+        protected readonly sensorsRepository: TSensorsRepository,
+        protected readonly reportRepository: TReportRepository,
         private readonly httpService: HttpService,
-        private readonly mobileAppApi: MobileAppApi,
     ) { }
 
-    protected async createDevice(device: Device): Promise<Device & Document> {
+    protected async createDevice(device: TDevice): Promise<TDevice> {
+        const existingDevice = await this.deviceRepository.findOne({ serialNumber: device.serialNumber });
+
+        if (existingDevice) {
+            throw new ConflictException();
+        }
+
         device.isActive = true;
         device.lastUpdate = new Date();
 
         return await this.deviceRepository.create(device);
     }
 
-    private checkIsActiveStatus(device: Device & Document) {
+    private checkIsActiveStatus(device: TDevice & Document) {
         if (device.isActive === false) {
             device.isActive = true;
         }
@@ -42,11 +48,11 @@ export abstract class DeviceService<
         device.save();
     }
 
-    protected async saveDeviceSensorsData(serialNumber: string, sensorsData: SensorsData): Promise<SensorsData & Document> {
-        const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
+    protected async saveDeviceSensorsData(deviceId: string, sensorsData: TSensorsData): Promise<TSensorsData> {
+        const device = await this.deviceRepository.findById(deviceId);
 
         if (!device) {
-            throw new NotFoundException(`Device with serial number ${serialNumber} not found`);
+            throw new NotFoundException();
         }
 
         this.checkIsActiveStatus(device);
@@ -54,51 +60,35 @@ export abstract class DeviceService<
         return await this.sensorsRepository.create(sensorsData);
     }
 
-    protected async saveDeviceReport(serialNumber: string, deviceReport: DeviceReport): Promise<DeviceReport & Document> {
-        const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
+    protected async saveDeviceReport(deviceId: string, deviceReport: TDeviceReport): Promise<{ savedReport: TDeviceReport, serialNumber: string }> {
+        const device = await this.deviceRepository.findById(deviceId);
 
         if (!device) {
-            throw new NotFoundException(`Device with serial number ${serialNumber} not found`);
+            throw new NotFoundException();
         }
 
         this.checkIsActiveStatus(device);
 
-        const updateFields: Record<string, boolean> = {};
+        this.deviceRepository.updateSensorsStatus(device, deviceReport);
 
-        for (const sensorName of Object.keys(deviceReport)) {
-            if (deviceReport[sensorName].isActive !== device.sensorsStatus[sensorName]) {
-                updateFields[`sensorsStatus.${sensorName}`] = deviceReport[sensorName].isActive;
-            }
-        }
-
-        if (Object.keys(updateFields).length > 0) {
-            await this.deviceRepository.updateOne({ serialNumber: serialNumber }, {
-                $set: updateFields
-            });
-        }
-
-        return await this.reportRepository.create(deviceReport);
+        return {
+            savedReport: await this.reportRepository.create(deviceReport),
+            serialNumber: device.serialNumber
+        };
     }
 
-    async sendNotificationToMobileApp(report: IDeviceReport, deviceType: DeviceType, notificationType: NotificationType) {
+    async sendHwNotificationToMobileApp(report: IDeviceReport, serialNumber: string, deviceType: DeviceType, apiEndpoint: string): Promise<void> {
         const mobileAppNotificationDto = plainToClass(MobileAppNotificationDto, report);
+        mobileAppNotificationDto.serialNumber = serialNumber;
         mobileAppNotificationDto.message = report.generalMessage;
-        mobileAppNotificationDto.notificationType = notificationType;
         mobileAppNotificationDto.deviceType = deviceType;
 
         const result = await lastValueFrom(
-            this.httpService.post<void>(this.mobileAppApi.sendHwNotification(), mobileAppNotificationDto)
+            this.httpService.post<void>(apiEndpoint, mobileAppNotificationDto)
         );
 
         if (result.status !== HttpStatus.CREATED) {
-            throw new InternalServerErrorException('Failed to send notification to mobile app');
+            throw new MobileNotificationReqFailedException();
         }
     }
-
-    async validateSerialNumber(serialNumber: string): Promise<ValidateSerialNumberRes> {
-        const device = await this.deviceRepository.findOne({ serialNumber: serialNumber });
-        return { isValid: !!device };
-    }
 }
-
-// TODO: try to remove toObject() calls and excludeExtraneousValues: true

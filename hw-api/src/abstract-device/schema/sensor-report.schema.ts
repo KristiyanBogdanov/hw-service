@@ -10,5 +10,5 @@ export class SensorReport implements ISensorReport {
 
     @IsString()
     @Prop()
-    message?: string;
+    message: string;
 }

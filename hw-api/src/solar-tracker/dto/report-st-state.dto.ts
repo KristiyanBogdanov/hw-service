@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/mapped-types';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { PickType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { SolarTrackerReport } from '../schema';
 
 export class ReportSTStateReq extends PickType(SolarTrackerReport, [
@@ -9,12 +9,19 @@ export class ReportSTStateReq extends PickType(SolarTrackerReport, [
     'elevationMotor',
     'importance',
     'generalMessage',
+    'advice',
     'timestamp'
-]) { }
+]) {
+    readonly irradianceSensor: SolarTrackerReport['irradianceSensor'];
+    readonly accelerometer: SolarTrackerReport['accelerometer'];
+    readonly azimuthMotor: SolarTrackerReport['azimuthMotor'];
+    readonly elevationMotor: SolarTrackerReport['elevationMotor'];
+    readonly importance: SolarTrackerReport['importance'];
+    readonly generalMessage: SolarTrackerReport['generalMessage'];
+    readonly timestamp: SolarTrackerReport['timestamp'];
+}
 
 @Exclude()
-export class ReportSTStateRes {
-    @Expose({ name: '_id' })
-    @Transform((value) => value.obj._id.toString())
-    oid: string;
-}
+export class ReportSTStateRes extends PickType(SolarTrackerReport, [
+    'id',
+]) { }

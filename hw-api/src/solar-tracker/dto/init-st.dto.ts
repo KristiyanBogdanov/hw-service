@@ -1,23 +1,26 @@
-import { PickType } from '@nestjs/mapped-types';
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { PickType } from '@nestjs/swagger';
+import { Exclude, Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 import { CoordinatesDto } from '../../shared/dto';
 import { SolarTracker } from '../schema';
 
 export class InitSTReq extends PickType(SolarTracker, [
     'serialNumber',
-    'installationDate',
-    'sensorsStatus'
+    'sensorsStatus',
+    'capacity',
+    'installationDate'
 ]) {
+    readonly serialNumber: SolarTracker['serialNumber'];
+    readonly sensorsStatus: Readonly<SolarTracker['sensorsStatus']>;
+    readonly installationDate: SolarTracker['installationDate'];
+
     @IsNotEmpty()
     @ValidateNested()
     @Type(() => CoordinatesDto)
-    readonly coordinates: CoordinatesDto;
+    readonly coordinates: Readonly<CoordinatesDto>;
 }
 
 @Exclude()
-export class InitSTRes {
-    @Expose({ name: '_id' })
-    @Transform((value) => value.obj._id.toString())
-    oid: string;
-}
+export class InitSTRes extends PickType(SolarTracker, [
+    'id'
+]) { }

@@ -1,45 +1,46 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
-import { ValidateSerialNumberRes } from '../abstract-device/dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ValidateMongoId } from '../shared/pipe';
 import { WeatherStationService } from './weather-station.service';
 import {
     InitWSReq, InitWSRes,
     SaveWSSensorsDataReq, SaveWSSensorsDataRes,
     ReportWSStateReq, ReportWSStateRes, 
-    GetWSInsightsRes
+    GetWSInsightsRes,
+    ValidateWSSerialNumberRes
 } from './dto';
 
-@Controller('weather-station')
+@Controller('weather-stations')
 export class WeatherStationController {
-    constructor(private readonly service: WeatherStationService) { }
+    constructor(private readonly weatherStationService: WeatherStationService) { }
 
-    @Post('/init')
+    @Post('/')
     async init(@Body() weatherStationData: InitWSReq): Promise<InitWSRes> {
-        return await this.service.init(weatherStationData);
+        return await this.weatherStationService.init(weatherStationData);
     }
 
-    @Post('/:serialNumber/sensors-data')
+    @Post('/:weatherStationId/sensors-data')
     async saveSensorsData(
-        @Param('serialNumber') serialNumber: string,
+        @Param('weatherStationId', ValidateMongoId) weatherStationId: string,
         @Body() sensorsData: SaveWSSensorsDataReq
     ): Promise<SaveWSSensorsDataRes> {
-        return await this.service.saveSensorsData(serialNumber, sensorsData);
+        return await this.weatherStationService.saveSensorsData(weatherStationId, sensorsData);
     }
 
-    @Post('/:serialNumber/report')
+    @Post('/:weatherStationId/reports')
     async reportState(
-        @Param('serialNumber') serialNumber: string,
+        @Param('weatherStationId', ValidateMongoId) weatherStationId: string,
         @Body() report: ReportWSStateReq
     ): Promise<ReportWSStateRes> {
-        return await this.service.reportState(serialNumber, report);
+        return await this.weatherStationService.reportState(weatherStationId, report);
     }
 
     @Get('/validate/:serialNumber')
-    async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateSerialNumberRes> {
-        return await this.service.validateSerialNumber(serialNumber);
+    async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateWSSerialNumberRes> {
+        return await this.weatherStationService.validateSerialNumber(serialNumber);
     }
 
     @Get('/:serialNumber/insights')
     async getInsights(@Param('serialNumber') serialNumber: string): Promise<GetWSInsightsRes> {
-        return await this.service.getInsights(serialNumber);
+        return await this.weatherStationService.getInsights(serialNumber);
     }
 }

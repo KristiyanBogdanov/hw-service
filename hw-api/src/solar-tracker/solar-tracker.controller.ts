@@ -1,48 +1,51 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseFilters } from '@nestjs/common';
 import { AxiosErrorFilter } from '../shared/filter';
-import { ValidateSerialNumberRes } from '../abstract-device/dto';
+import { ValidateMongoId } from '../shared/pipe';
 import { SolarTrackerService } from './solar-tracker.service';
 import {
     InitSTReq, InitSTRes,
     SaveSTSensorsDataReq, SaveSTSensorsDataRes,
-    ReportSTStateReq, ReportSTStateRes, 
-    GetSTInsightsReq, GetSTInsightsRes
+    ReportSTStateReq, ReportSTStateRes,
+    GetSTInsightsReq, GetSTInsightsRes,
+    ValidateSTSerialNumberRes
 } from './dto';
 
-@Controller('solar-tracker')
+@Controller('solar-trackers')
 export class SolarTrackerController {
-    constructor(private readonly service: SolarTrackerService) { }
+    constructor(private readonly solarTrackerService: SolarTrackerService) { }
 
-    @Post('/init')
+    @Post('/')
     async init(@Body() solarTrackerData: InitSTReq): Promise<InitSTRes> {
-        return await this.service.init(solarTrackerData);
+        return await this.solarTrackerService.init(solarTrackerData);
     }
 
-    @Post('/:serialNumber/sensors-data')
+    @Post('/:solarTrackerId/sensors-data')
     async saveSensorsData(
-        @Param('serialNumber') serialNumber: string,
+        @Param('solarTrackerId', ValidateMongoId) solarTrackerId: string,
         @Body() sensorsData: SaveSTSensorsDataReq
     ): Promise<SaveSTSensorsDataRes> {
-        return await this.service.saveSensorsData(serialNumber, sensorsData);
+        return await this.solarTrackerService.saveSensorsData(solarTrackerId, sensorsData);
     }
 
-    @Post('/:serialNumber/report')
+    @Post('/:solarTrackerId/reports')
     @UseFilters(new AxiosErrorFilter())
     async reportState(
-        @Param('serialNumber') serialNumber: string,
+        @Param('solarTrackerId', ValidateMongoId) solarTrackerId: string,
         @Body() report: ReportSTStateReq
     ): Promise<ReportSTStateRes> {
-        return await this.service.reportState(serialNumber, report);
+        return await this.solarTrackerService.reportState(solarTrackerId, report);
     }
 
     @Get('/validate/:serialNumber')
-    async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateSerialNumberRes> {
-        return await this.service.validateSerialNumber(serialNumber);
+    async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateSTSerialNumberRes> {
+        return await this.solarTrackerService.validateSerialNumber(serialNumber);
     }
 
     @Post('/insights')
     @HttpCode(HttpStatus.OK)
     async getInsights(@Body() requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {
-        return await this.service.getInsights(requestData);
+        return await this.solarTrackerService.getInsights(requestData);
     }
 }
+
+// TODO: optimise validateSerialNumber method by passing array of serial numbers

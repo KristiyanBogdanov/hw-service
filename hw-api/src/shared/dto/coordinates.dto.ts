@@ -3,10 +3,10 @@ import { ILocation } from '../../abstract-device/interface';
 
 export class CoordinatesDto {
     @IsLongitude()
-    readonly longitude: number;
+    longitude: number;
 
     @IsLatitude()
-    readonly latitude: number;
+    latitude: number;
 
     static toLocation(coord: CoordinatesDto): ILocation {
         return {

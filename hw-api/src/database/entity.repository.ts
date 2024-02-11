@@ -44,5 +44,3 @@ export abstract class EntityRepository<T> {
         return await this.entityModel.aggregate(pipeline, options);
     }
 }
-
-// TODO: move to different module

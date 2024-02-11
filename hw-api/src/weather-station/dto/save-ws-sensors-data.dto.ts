@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/mapped-types';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { PickType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { WeatherStationSensors } from '../schema';
 
 export class SaveWSSensorsDataReq extends PickType(WeatherStationSensors, [
@@ -7,11 +7,14 @@ export class SaveWSSensorsDataReq extends PickType(WeatherStationSensors, [
     'windSpeed',
     'windDirection',
     'timestamp'
-]) { }
+]) {
+    readonly temperature: WeatherStationSensors['temperature'];
+    readonly windSpeed: WeatherStationSensors['windSpeed'];
+    readonly windDirection: WeatherStationSensors['windDirection'];
+    readonly timestamp: WeatherStationSensors['timestamp'];
+}
 
 @Exclude()
-export class SaveWSSensorsDataRes {
-    @Expose({ name: '_id' })
-    @Transform((value) => value.obj._id.toString())
-    oid: string;
-}
+export class SaveWSSensorsDataRes extends PickType(WeatherStationSensors, [
+    'id',
+]) { }

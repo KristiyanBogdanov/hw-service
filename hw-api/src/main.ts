@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { MongoErrorFilter } from './shared/filter';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { bufferLogs: true });
+    
+    app.useLogger(app.get(Logger));
+    app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
     app.setGlobalPrefix('hw-api/v1');
 
@@ -14,7 +18,6 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('HW API')
-        .setDescription('API for HW')
         .setVersion('1.0')
         .build();
     const document = SwaggerModule.createDocument(app, config);

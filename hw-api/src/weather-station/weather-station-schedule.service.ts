@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { WEATHER_STATION_CRON_INTERVAL_IN_MILLISECONDS, WEATHER_STATION_CRON_PATTERN } from '../shared/constants';
-import { DeviceType, Importance, NotificationType } from '../abstract-device/enum';
+import { 
+    INACTIVE_WEATHER_STATION_NOTIFICATION_ADVICE, INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE, 
+    WEATHER_STATION_CRON_INTERVAL_IN_MILLISECONDS, WEATHER_STATION_CRON_PATTERN 
+} from '../shared/constants';
+import { MobileAppApi } from '../shared/api';
+import { DeviceType, Importance } from '../abstract-device/enum';
 import { WeatherStationRepository } from './repository';
 import { WeatherStationService } from './weather-station.service';
 
@@ -9,31 +13,34 @@ import { WeatherStationService } from './weather-station.service';
 export class WeatherStationScheduleService {
     constructor(
         private readonly weatherStationRepository: WeatherStationRepository,
-        private readonly weatherStationService: WeatherStationService
+        private readonly weatherStationService: WeatherStationService,
+        private readonly mobileAppApi: MobileAppApi,
+        private readonly logger: Logger
     ) { }
 
     @Cron(WEATHER_STATION_CRON_PATTERN)
     async updateIsActiveStatus() {
-        const weatherStations = await this.weatherStationRepository.find({
-            isActive: true,
-            lastUpdate: {
-                $lt: new Date(new Date().getTime() - WEATHER_STATION_CRON_INTERVAL_IN_MILLISECONDS)
-            }
-        });
-        
-        weatherStations.forEach(weatherStation => {
+        const inactiveWeatherStations = await this.weatherStationRepository.findInactiveDevices(WEATHER_STATION_CRON_INTERVAL_IN_MILLISECONDS);
+
+        Promise.all(inactiveWeatherStations.map(async weatherStation => {
             const report = {
-                serialNumber: weatherStation.serialNumber,
+                deviceId: weatherStation.id,
                 importance: Importance.Warning,
-                generalMessage: 'Weather station is inactive',
+                generalMessage: INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE,
+                advice: INACTIVE_WEATHER_STATION_NOTIFICATION_ADVICE,
                 timestamp: new Date()
             };
 
-            this.weatherStationService.sendNotificationToMobileApp(report, DeviceType.WeatherStation, NotificationType.InactiveDevice);
-            console.log(`Weather station with serial number ${weatherStation.serialNumber} is inactive`);
+            try {
+                await this.weatherStationService.sendHwNotificationToMobileApp(
+                    report, weatherStation.serialNumber, DeviceType.WeatherStation, this.mobileAppApi.sendInactiveDeviceNotification()
+                );
+            } catch (error) {
+                this.logger.error(error);
+            }
 
             weatherStation.isActive = false;
             weatherStation.save();
-        });
+        }));
     }
 }

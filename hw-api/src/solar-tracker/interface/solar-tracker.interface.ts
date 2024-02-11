@@ -8,5 +8,6 @@ export interface ISolarTrackerSensorsStatus {
 }
 
 export interface ISolarTracker extends IDevice {
+    capacity: number;
     sensorsStatus: ISolarTrackerSensorsStatus;
 }
