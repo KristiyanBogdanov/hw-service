@@ -5,7 +5,7 @@ import { SOLAR_TRACKER_AZIMUTH_MAX_ANGLE, SOLAR_TRACKER_AZIMUTH_MIN_ANGLE, SOLAR
 import { ISolarTrackerSensors } from '../interface';
 
 @Schema({
-    collection: 'solarTrackerSensors',
+    collection: 'solarTrackersSensors',
     versionKey: false,
     timeseries: {
         timeField: 'timestamp',
