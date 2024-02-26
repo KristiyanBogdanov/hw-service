@@ -1,6 +1,4 @@
 export const TWENTY_FOUR_HOURS_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-export const SEVEN_DAYS_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000;
-export const TWELVE_MONTHS_IN_MILLISECONDS = 12 * 30 * 24 * 60 * 60 * 1000;
 
 export const SOLAR_TRACKER_CRON_INTERVAL = 15; // minutes
 export const SOLAR_TRACKER_CRON_PATTERN = `0 */${SOLAR_TRACKER_CRON_INTERVAL} * * * *`;	
