@@ -18,19 +18,27 @@ export abstract class SensorsRepository<T extends ISensorsData> extends EntityRe
         );
     }
 
-    protected mapAvgValueToDto(dbResult: Record<string, number>[], expectedLength: number): AverageSensorValueDto[] {
+    protected mapAvgValueToDto(dbResult: { _id: string, average: number, timestamp: Date }[], expectedLength: number): AverageSensorValueDto[] {
         const entities = [];
+
         for (let i = 1; i <= expectedLength; ++i) {
             entities.push({ id: i, average: null });
         }
 
-        return entities.map((entity) => {
-            const found = dbResult.find((record) => record._id === entity.id);
-            return found ? { id: found._id, average: found.average } : entity;
-        });
+        for (const record of dbResult) {
+            const currentTime = new Date().getTime();
+            const recordTime = record.timestamp.getTime();
+            const hoursDiff = Math.floor((currentTime - recordTime) / (1000 * 60 * 60));
+
+            entities[hoursDiff - 1] = { id: hoursDiff, average: record.average };
+        }
+
+        return entities;
     }
 
-    protected getAvgValue(interval:number, deviceId: string, groupingOperator: string, fieldName: string): Promise<Record<string, number>[]> {
+    protected getAvgValue(interval: number, deviceId: string, groupingOperator: string, fieldName: string): Promise<
+        { _id: string, average: number, timestamp: Date }[]
+    > {
         return this.aggregate([
             {
                 $match: {
@@ -45,8 +53,12 @@ export abstract class SensorsRepository<T extends ISensorsData> extends EntityRe
                 $group: {
                     _id: { [groupingOperator]: '$timestamp' },
                     average: { $avg: `$${fieldName}` },
-                }
+                    timestamp: { $first: '$timestamp' },
+                },
             },
+            {
+                $sort: { timestamp: 1 },
+            }
         ]);
     }
 }

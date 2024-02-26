@@ -29,7 +29,11 @@ export class WeatherStationSensorsRepository extends SensorsRepository<WeatherSt
                     _id: { $hour: '$timestamp' },
                     avgTemp: { $avg: '$temperature' },
                     avgWindSpeed: { $avg: '$windSpeed' },
+                    timestamp: { $first: '$timestamp' },
                 }
+            },
+            {
+                $sort: { timestamp: 1 },
             },
         ]);
 
@@ -42,16 +46,16 @@ export class WeatherStationSensorsRepository extends SensorsRepository<WeatherSt
                 windSpeed.push({ id: i, average: null });
             }
 
-            return {
-                temperature: temperature.map((entity) => {
-                    const found = result.find((record) => record._id === entity.id);
-                    return found ? { id: found._id, average: found.avgTemp } : entity;
-                }),
-                windSpeed: windSpeed.map((entity) => {
-                    const found = result.find((record) => record._id === entity.id);
-                    return found ? { id: found._id, average: found.avgWindSpeed } : entity;
-                }),
-            };
+            for (const record of result) {
+                const currentTime = new Date().getTime();
+                const recordTime = record.timestamp.getTime();
+                const hoursDiff = Math.floor((currentTime - recordTime) / (1000 * 60 * 60));
+
+                temperature[hoursDiff - 1] = { id: hoursDiff, average: record.avgTemp };
+                windSpeed[hoursDiff - 1] = { id: hoursDiff, average: record.avgWindSpeed };
+            }
+            
+            return { temperature, windSpeed };
         }
     }
 }
