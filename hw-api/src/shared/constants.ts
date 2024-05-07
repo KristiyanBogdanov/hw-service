@@ -13,7 +13,7 @@ export const SOLAR_TRACKER_AZIMUTH_MAX_ANGLE = 120;
 export const SOLAR_TRACKER_ELEVATION_MIN_ANGLE = 45;
 export const SOLAR_TRACKER_ELEVATION_MAX_ANGLE = 90;
 
-export const INACTIVE_SOLAR_TRACKER_NOTIFICATION_MESSAGE = 'Solar tracker is not active';
+export const INACTIVE_SOLAR_TRACKER_NOTIFICATION_MESSAGE = (serialNumber: string) => `Solar tracker with serial number ${serialNumber} is not active`;
 export const INACTIVE_SOLAR_TRACKER_NOTIFICATION_ADVICE = 'Please check the solar tracker and if necessary, restart it';
-export const INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE = 'Weather station is not active';
+export const INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE = (serialNumber: string) => `Weather station with serial number ${serialNumber} is not active`;
 export const INACTIVE_WEATHER_STATION_NOTIFICATION_ADVICE = 'Please contact the support team';

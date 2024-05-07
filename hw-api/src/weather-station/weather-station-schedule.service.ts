@@ -26,7 +26,7 @@ export class WeatherStationScheduleService {
             const report = {
                 deviceId: weatherStation.id,
                 importance: Importance.Warning,
-                generalMessage: INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE,
+                generalMessage: INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE(weatherStation.serialNumber),
                 advice: INACTIVE_WEATHER_STATION_NOTIFICATION_ADVICE,
                 timestamp: new Date()
             };
