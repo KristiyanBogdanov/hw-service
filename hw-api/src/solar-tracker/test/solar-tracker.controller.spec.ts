@@ -7,7 +7,8 @@ import {
     reportSTStateReqStub, reportSTStateResStub, 
     saveSTSensorsDataReqStub, saveSTSensorsDataResStub, 
     validateSTSerialNumberResStub,
-    getSTInsightsReqStub,getSTInsightsResStub
+    getSTInsightsReqStub,getSTInsightsResStub,
+    solarTrackerStub
 } from './stub';
 
 jest.mock('../solar-tracker.service');
@@ -25,6 +26,9 @@ describe('SolarTrackerController', () => {
 
         solarTrackerService = moduleRef.get<SolarTrackerService>(SolarTrackerService);
         solarTrackerController = moduleRef.get<SolarTrackerController>(SolarTrackerController);
+    });
+
+    afterEach(() => {
         jest.clearAllMocks();
     });
 
@@ -51,11 +55,11 @@ describe('SolarTrackerController', () => {
             let result: SaveSTSensorsDataRes;
 
             beforeEach(async () => {
-                result = await solarTrackerController.saveSensorsData(initSTResStub().id, saveSTSensorsDataReqStub());
+                result = await solarTrackerController.saveSensorsData(solarTrackerStub().id, saveSTSensorsDataReqStub());
             });
 
             test('then it should call solarTrackerService.saveSensorsData', () => {
-                expect(solarTrackerService.saveSensorsData).toHaveBeenCalledWith(initSTResStub().id, saveSTSensorsDataReqStub());
+                expect(solarTrackerService.saveSensorsData).toHaveBeenCalledWith(solarTrackerStub().id, saveSTSensorsDataReqStub());
             });
 
             test('then it should return SaveSTSensorsDataRes', () => {
@@ -69,11 +73,11 @@ describe('SolarTrackerController', () => {
             let result: ReportSTStateRes;
 
             beforeEach(async () => {
-                result = await solarTrackerController.reportState(initSTResStub().id, reportSTStateReqStub());
+                result = await solarTrackerController.reportState(solarTrackerStub().id, reportSTStateReqStub());
             });
 
             test('then it should call solarTrackerService.reportState', () => {
-                expect(solarTrackerService.reportState).toHaveBeenCalledWith(initSTResStub().id, reportSTStateReqStub());
+                expect(solarTrackerService.reportState).toHaveBeenCalledWith(solarTrackerStub().id, reportSTStateReqStub());
             });
 
             test('then it should return ReportSTStateRes', () => {
@@ -87,11 +91,11 @@ describe('SolarTrackerController', () => {
             let result: ValidateSTSerialNumberRes;
 
             beforeEach(async () => {
-                result = await solarTrackerController.validateSerialNumber(initSTReqStub().serialNumber);
+                result = await solarTrackerController.validateSerialNumber(solarTrackerStub().serialNumber);
             });
 
             test('then it should call solarTrackerService.validateSerialNumber', () => {
-                expect(solarTrackerService.validateSerialNumber).toHaveBeenCalledWith(initSTReqStub().serialNumber);
+                expect(solarTrackerService.validateSerialNumber).toHaveBeenCalledWith(solarTrackerStub().serialNumber);
             });
 
             test('then it should return ValidateSTSerialNumberRes', () => {

@@ -19,6 +19,6 @@ export const reportSTStateReqStub = (): ReportSTStateReq => {
 
 export const reportSTStateResStub = (): ReportSTStateRes => {
     return {
-        id: '65db3e4e4e45c3279695ae12'
+        id: '84ag2e4e4o91g4219293ae14'
     };
 }

@@ -13,6 +13,6 @@ export const saveSTSensorsDataReqStub = (): SaveSTSensorsDataReq => {
 
 export const saveSTSensorsDataResStub = (): SaveSTSensorsDataRes => {
     return {
-        id: '65db3e4e4e45c3279695ae12'
+        id: '93qb2e0e1e41d3279635ae76'
     };
 }

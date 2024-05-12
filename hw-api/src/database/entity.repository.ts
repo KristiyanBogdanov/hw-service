@@ -8,7 +8,7 @@ export abstract class EntityRepository<T> {
         projection?: Record<string, unknown>,
         options?: Record<string, unknown>
     ): Promise<(T & Document) | null> {
-        return await this.entityModel.findById(entityId, projection, options);
+        return await this.entityModel.findById(entityId, projection, options) ;
     }
 
     async findOne(

@@ -1,4 +1,5 @@
 import { InitSTReq, InitSTRes } from '../../dto';
+import { solarTrackerStub } from './solar-tracker.stub';
 
 export const initSTReqStub = (): InitSTReq => {
     return {
@@ -20,6 +21,6 @@ export const initSTReqStub = (): InitSTReq => {
 
 export const initSTResStub = (): InitSTRes => {
     return {
-        id: '65db3e4e4e45c3279695ae12'
+        id: solarTrackerStub().id,
     };
 };

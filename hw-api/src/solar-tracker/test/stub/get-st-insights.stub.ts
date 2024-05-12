@@ -1,28 +1,26 @@
 import { GetSTInsightsReq, GetSTInsightsRes } from '../../dto';
+import { solarTrackerStub } from './solar-tracker.stub';
 
 export const getSTInsightsReqStub = (): GetSTInsightsReq => {
     return {
-        serialNumbers: ['ST2n19p0ha']
+        serialNumbers: [solarTrackerStub().serialNumber]
     };
 };
 
 export const getSTInsightsResStub = (): GetSTInsightsRes => {
+    const id = solarTrackerStub().id;
+
     return {
         data: {
-            '65db3e4e4e45c3279695ae12': {
-                installationDate: new Date('2024-05-10T00:00:00.000Z'),
-                sensorsStatus: {
-                    irradianceSensor: true,
-                    accelerometer: true,
-                    azimuthMotor: true,
-                    elevationMotor: true
-                },
-                capacity: 6,
-                isActive: true,
-                lastUpdate: new Date('2024-05-15T00:00:00.000Z'),
+            id: {
+                installationDate: solarTrackerStub().installationDate,
+                sensorsStatus: solarTrackerStub().sensorsStatus,
+                capacity: solarTrackerStub().capacity,
+                isActive: solarTrackerStub().isActive,
+                lastUpdate: solarTrackerStub().lastUpdate,
                 coordinates: {
-                    latitude: 23.3219,
-                    longitude: 42.6977
+                    latitude: solarTrackerStub().location.coordinates[0],
+                    longitude: solarTrackerStub().location.coordinates[1]
                 },
                 currentAzimuth: 120,
                 currentElevation: 45,
