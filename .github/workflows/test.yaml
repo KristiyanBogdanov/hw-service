@@ -27,8 +27,8 @@ jobs:
 
       - name: Install Dependencies
         run: yarn install
-        working-directory: hw-api
+        working-directory: ${{ github.workspace }}/hw-api
 
       - name: Run Unit Tests
         run: yarn test --verbose
-        working-directory: hw-api
+        working-directory: ${{ github.workspace }}/hw-api
