@@ -30,3 +30,4 @@ jobs:
 
       - name: Run Unit Tests
         run: yarn test --verbose
+        working-directory: hw-api
