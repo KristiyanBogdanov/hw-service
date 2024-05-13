@@ -13,7 +13,7 @@ export const reportSTStateReqStub = (): ReportSTStateReq => {
         importance: Importance.Critical,
         generalMessage: 'Critical error in the system detected',
         advice: 'Please check the system',
-        timestamp: new Date('2024-05-16T00:00:00.000Z')
+        timestamp: new Date('2024-05-13T00:00:00.000Z')
     };
 }
 

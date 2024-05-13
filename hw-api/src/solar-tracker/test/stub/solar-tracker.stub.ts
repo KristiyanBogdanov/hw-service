@@ -17,6 +17,13 @@ export const solarTrackerStub = (): SolarTracker => {
             azimuthMotor: true,
             elevationMotor: true,
         },
-        lastUpdate: new Date('2024-05-15T00:00:00.000Z'),
+        lastUpdate: new Date('2024-05-12T00:00:00.000Z'),
+    };
+};
+
+export const solarTrackerDocumentStub = () => {
+    return {
+        ...solarTrackerStub(),
+        save: jest.fn(),
     };
 }

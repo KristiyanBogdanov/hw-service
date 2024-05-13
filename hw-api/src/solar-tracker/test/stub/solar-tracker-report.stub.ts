@@ -13,3 +13,8 @@ export const solarTrackerReportStub = (): SolarTrackerReport => ({
     azimuthMotor: reportSTStateReqStub().azimuthMotor,
     elevationMotor: reportSTStateReqStub().elevationMotor,
 });
+
+export const solarTrackerReportDocumentStub = () => ({
+    ...solarTrackerReportStub(),
+    save: jest.fn(),
+});

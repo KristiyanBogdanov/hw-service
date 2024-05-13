@@ -151,7 +151,7 @@ describe('SolarTrackerRepository', () => {
         });
 
         describe('when findInactiveDevices is called with negative cronIntervalInMilliseconds', () => {
-            let error: Error;
+            let result: Error;
             
             beforeEach(async () => {
                 jest.spyOn(solarTrackerModel, 'find');
@@ -159,7 +159,7 @@ describe('SolarTrackerRepository', () => {
                 try {
                     await solarTrackerRepository.findInactiveDevices(-1000);
                 } catch (e) {
-                    error = e;
+                    result = e;
                 }
             });
 
@@ -168,7 +168,7 @@ describe('SolarTrackerRepository', () => {
             });
 
             test('then it should throw an error', () => {
-                expect(error).toBeInstanceOf(Error);
+                expect(result).toBeInstanceOf(Error);
             });
         });
 

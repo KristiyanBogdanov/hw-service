@@ -7,7 +7,7 @@ export const saveSTSensorsDataReqStub = (): SaveSTSensorsDataReq => {
         elevation: 45,
         azimuthDeviation: 0,
         elevationDeviation: 0,
-        timestamp: new Date('2024-05-15T00:00:00.000Z')
+        timestamp: new Date('2024-05-12T00:00:00.000Z')
     };
 }
 
