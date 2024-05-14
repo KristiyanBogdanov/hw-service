@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseFilters } from '@nestjs/common';
+ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseFilters } from '@nestjs/common';
 import { AxiosErrorFilter } from '../shared/filter';
 import { ValidateMongoId } from '../shared/pipe';
 import { SolarTrackerService } from './solar-tracker.service';

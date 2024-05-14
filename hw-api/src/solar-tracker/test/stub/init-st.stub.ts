@@ -13,8 +13,8 @@ export const initSTReqStub = (): InitSTReq => {
         capacity: 6,
         installationDate: new Date('2024-05-10T00:00:00.000Z'),
         coordinates: {
-            latitude: 23.3219,
-            longitude: 42.6977
+            longitude: 42.6977,
+            latitude: 23.3219
         },
     };
 }

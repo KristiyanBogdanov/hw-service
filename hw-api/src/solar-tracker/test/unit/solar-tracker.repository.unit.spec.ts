@@ -1,10 +1,10 @@
 import { FilterQuery } from 'mongoose';
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { SolarTrackerRepository } from '../repository';
-import { SolarTracker } from '../schema';
-import { SolarTrackerModel } from './support';
-import { solarTrackerReportStub, solarTrackerStub } from './stub';
+import { SolarTrackerRepository } from '../../repository';
+import { SolarTracker } from '../../schema';
+import { SolarTrackerModel } from '../support';
+import { solarTrackerReportStub, solarTrackerStub } from '../stub';
 
 describe('SolarTrackerRepository', () => {
     let solarTrackerRepository: SolarTrackerRepository;

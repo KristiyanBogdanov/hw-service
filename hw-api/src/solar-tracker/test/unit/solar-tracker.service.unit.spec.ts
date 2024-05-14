@@ -3,18 +3,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Document } from 'mongoose';
-import { MobileAppApi } from '../../shared/api';
-import { InitSTRes, ReportSTStateRes, SaveSTSensorsDataRes, ValidateSTSerialNumberRes } from '../dto';
-import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from '../repository';
-import { SolarTrackerService } from '../solar-tracker.service';
-import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from '../schema';
+import { MobileAppApi } from '../../../shared/api';
+import { InitSTRes, ReportSTStateRes, SaveSTSensorsDataRes, ValidateSTSerialNumberRes } from '../../dto';
+import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from '../../repository';
+import { SolarTrackerService } from '../../solar-tracker.service';
+import { SolarTracker, SolarTrackerReport, SolarTrackerSensors } from '../../schema';
 import {
     initSTReqStub, initSTResStub,
     reportSTStateReqStub, reportSTStateResStub,
     saveSTSensorsDataReqStub, saveSTSensorsDataResStub,
     solarTrackerDocumentStub, solarTrackerReportDocumentStub, solarTrackerSensorsDocumentStub,
     solarTrackerStub
-} from './stub';
+} from '../stub';
 
 describe('SolarTrackerService', () => {
     let solarTrackerService: SolarTrackerService;
