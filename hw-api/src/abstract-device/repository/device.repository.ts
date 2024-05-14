@@ -10,6 +10,10 @@ export abstract class DeviceRepository<T extends IDevice> extends EntityReposito
     }
 
     async findInactiveDevices(cronIntervalInMilliseconds: number): Promise<(T & Document)[]> {
+        if (cronIntervalInMilliseconds <= 0) {
+            throw new Error('Cron interval must be greater than 0');
+        }
+
         const now = new Date();
         const lastUpdate = new Date(now.getTime() - cronIntervalInMilliseconds);
 
@@ -19,6 +23,7 @@ export abstract class DeviceRepository<T extends IDevice> extends EntityReposito
         });
     }
 
+    // TODO: reconsider changing the IDeviceReport type to { ...; sensorsStatus: { irradianceSensor: SensorReport; ... } }
     async updateSensorsStatus(device: T, deviceReport: IDeviceReport): Promise<void> {
         const updateFields: Record<string, boolean> = {};
 

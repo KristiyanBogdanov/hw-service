@@ -73,10 +73,10 @@ export class SolarTrackerService extends DeviceService<
     async validateSerialNumber(serialNumber: string): Promise<ValidateSTSerialNumberRes> {
         const solarTracker = await this.deviceRepository.findOne({ serialNumber });
 
-        return plainToClass(ValidateSTSerialNumberRes, {
+        return {
             isValid: !!solarTracker,
             capacity: solarTracker?.capacity
-        });
+        };
     }
 
     async getInsights(requestData: GetSTInsightsReq): Promise<GetSTInsightsRes> {

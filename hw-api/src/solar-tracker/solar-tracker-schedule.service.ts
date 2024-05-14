@@ -26,7 +26,7 @@ export class SolarTrackerScheduleService {
             const report = {
                 deviceId: solarTracker.id,
                 importance: Importance.Warning,
-                generalMessage: INACTIVE_SOLAR_TRACKER_NOTIFICATION_MESSAGE,
+                generalMessage: INACTIVE_SOLAR_TRACKER_NOTIFICATION_MESSAGE(solarTracker.serialNumber),
                 advice: INACTIVE_SOLAR_TRACKER_NOTIFICATION_ADVICE,
                 timestamp: new Date()
             };
