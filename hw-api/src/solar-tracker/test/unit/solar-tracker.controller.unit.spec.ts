@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
-import { SolarTrackerController } from '../solar-tracker.controller';
-import { SolarTrackerService } from '../solar-tracker.service';
-import { GetSTInsightsRes, InitSTRes, ReportSTStateRes, SaveSTSensorsDataRes, ValidateSTSerialNumberRes } from '../dto';
+import { SolarTrackerController } from '../../solar-tracker.controller';
+import { SolarTrackerService } from '../../solar-tracker.service';
+import { GetSTInsightsRes, InitSTRes, ReportSTStateRes, SaveSTSensorsDataRes, ValidateSTSerialNumberRes } from '../../dto';
 import { 
     initSTReqStub, initSTResStub, 
     reportSTStateReqStub, reportSTStateResStub, 
@@ -9,9 +9,9 @@ import {
     validateSTSerialNumberResStub,
     getSTInsightsReqStub,getSTInsightsResStub,
     solarTrackerStub
-} from './stub';
+} from '../stub';
 
-jest.mock('../solar-tracker.service');
+jest.mock('../../solar-tracker.service');
 
 describe('SolarTrackerController', () => {
     let solarTrackerController: SolarTrackerController;
