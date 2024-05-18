@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SensorsRepository } from '../../abstract-device/repository';
-import { AverageSensorValueDto } from '../../shared/dto';
+import { AverageSensorValueDto } from '../../abstract-device/dto';
 import { TWENTY_FOUR_HOURS_IN_MILLISECONDS } from '../../shared/constants';
 import { WeatherStationSensors } from '../schema';
 

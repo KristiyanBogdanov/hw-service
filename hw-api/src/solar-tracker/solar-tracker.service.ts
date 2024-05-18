@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { plainToClass } from 'class-transformer';
-import { CoordinatesDto } from '../shared/dto';
 import { MobileAppApi } from '../shared/api';
+import { CoordinatesDto } from '../abstract-device/dto';
 import { DeviceService } from '../abstract-device/device.service';
 import { DeviceType } from '../abstract-device/enum';
 import { SolarTrackerReportRepository, SolarTrackerRepository, SolarTrackerSensorsRepository } from './repository';

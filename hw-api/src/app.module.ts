@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { DatabaseModule } from './database/database.module';
@@ -26,7 +27,10 @@ import { WeatherStationModule } from './weather-station/weather-station.module';
         DatabaseModule,
         ScheduleModule.forRoot(),
         SolarTrackerModule,
-        WeatherStationModule
+        WeatherStationModule,
+        CacheModule.register({
+            isGlobal: true,
+        })
     ],
 })
 export class AppModule { }

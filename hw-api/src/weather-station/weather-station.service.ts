@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { plainToClass } from 'class-transformer';
 import { MobileAppApi } from '../shared/api';
-import { CoordinatesDto } from '../shared/dto';
+import { CoordinatesDto } from '../abstract-device/dto';
 import { DeviceService } from '../abstract-device/device.service';
 import { DeviceType } from '../abstract-device/enum';
 import { WeatherStationReportRepository, WeatherStationRepository, WeatherStationSensorsRepository } from './repository';
