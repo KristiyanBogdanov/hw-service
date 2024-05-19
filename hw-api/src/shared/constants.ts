@@ -17,3 +17,5 @@ export const INACTIVE_SOLAR_TRACKER_NOTIFICATION_MESSAGE = (serialNumber: string
 export const INACTIVE_SOLAR_TRACKER_NOTIFICATION_ADVICE = 'Please check the solar tracker and if necessary, restart it';
 export const INACTIVE_WEATHER_STATION_NOTIFICATION_MESSAGE = (serialNumber: string) => `Weather station with serial number ${serialNumber} is not active`;
 export const INACTIVE_WEATHER_STATION_NOTIFICATION_ADVICE = 'Please contact the support team';
+
+export const SERIAL_NUMBER_VALIDATION_CACHE_TTL = 60 * 60 * 1000;

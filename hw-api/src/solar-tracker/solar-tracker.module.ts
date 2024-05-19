@@ -19,7 +19,7 @@ import { SolarTrackerRepository, SolarTrackerSensorsRepository, SolarTrackerRepo
             { name: SolarTrackerSensors.name, schema: SolarTrackerSensorsSchema },
             { name: SolarTrackerReport.name, schema: SolarTrackerReportSchema }
         ]),
-        HttpModule
+        HttpModule,
     ],
     controllers: [SolarTrackerController],
     providers: [

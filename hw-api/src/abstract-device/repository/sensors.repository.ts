@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { EntityRepository } from '../../database';
-import { AverageSensorValueDto } from '../../shared/dto';
+import { AverageSensorValueDto } from '../../abstract-device/dto';
 import { ISensorsData } from '../interface';
 
 @Injectable()

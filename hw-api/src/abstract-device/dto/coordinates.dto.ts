@@ -1,5 +1,5 @@
 import { IsLatitude, IsLongitude } from 'class-validator';
-import { ILocation } from '../../abstract-device/interface';
+import { ILocation } from '../interface';
 
 export class CoordinatesDto {
     @IsLongitude()

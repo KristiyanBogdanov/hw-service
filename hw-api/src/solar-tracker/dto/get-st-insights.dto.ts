@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { Exclude } from 'class-transformer';
-import { AverageSensorValueDto, CoordinatesDto } from '../../shared/dto';
+import { AverageSensorValueDto, CoordinatesDto } from '../../abstract-device/dto';
 import { SolarTracker } from '../schema';
 
 export class GetSTInsightsReq {

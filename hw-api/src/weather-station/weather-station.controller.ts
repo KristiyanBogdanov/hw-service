@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
 import { ValidateMongoId } from '../shared/pipe';
+import { CacheSerialNumberValidationInterceptor } from '../abstract-device/interceptor';
 import { WeatherStationService } from './weather-station.service';
 import {
     InitWSReq, InitWSRes,
@@ -35,6 +36,7 @@ export class WeatherStationController {
     }
 
     @Get('/validate/:serialNumber')
+    @UseInterceptors(CacheSerialNumberValidationInterceptor<ValidateWSSerialNumberRes>)
     async validateSerialNumber(@Param('serialNumber') serialNumber: string): Promise<ValidateWSSerialNumberRes> {
         return await this.weatherStationService.validateSerialNumber(serialNumber);
     }

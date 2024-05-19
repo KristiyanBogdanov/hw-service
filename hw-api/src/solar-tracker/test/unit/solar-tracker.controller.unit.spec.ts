@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { CacheModule } from '@nestjs/cache-manager';
 import { SolarTrackerController } from '../../solar-tracker.controller';
 import { SolarTrackerService } from '../../solar-tracker.service';
 import { GetSTInsightsRes, InitSTRes, ReportSTStateRes, SaveSTSensorsDataRes, ValidateSTSerialNumberRes } from '../../dto';
@@ -19,7 +20,9 @@ describe('SolarTrackerController', () => {
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [],
+            imports: [
+                CacheModule.register()
+            ],
             controllers: [SolarTrackerController],
             providers: [SolarTrackerService]
         }).compile();

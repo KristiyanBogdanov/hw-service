@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { AverageSensorValueDto, CoordinatesDto } from '../../shared/dto';
+import { AverageSensorValueDto, CoordinatesDto } from '../../abstract-device/dto';
 import { WeatherStation } from '../schema';
 
 @Exclude()
